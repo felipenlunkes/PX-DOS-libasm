@@ -1,0 +1,154 @@
+Documentação para a criação de Drivers de Dispositivo
+*****************************************************
+
+Destinados ao PX-DOS 0.9.0
+--------------------------
+
+Requisítos para o desenvolvimento de Drivers
+++++++++++++++++++++++++++++++++++++++++++++
+
+
+* Os drivers para o PX-DOS devem possuir um cabeçalho próprio,
+designado para possibilitar seu correto funcionamento com o
+Sistema. Este cabeçalho é formado por declarações.
+Essas declarações são utilizadas para que o Sistema possa 
+determinar a função, o tipo, o nome, o número de interrupção
+implementados pelo Driver, além das versões do PX-DOS que
+o mesmo foi projetado a ser executado. Todas essas declarações,
+que compõem o cabeçalho do Driver são de extrema importância
+para que todo o funcionamento ocorra da maneira esperada.
+
+* O código deve se iniciar no offset 0h, diferente dos
+aplicativos .com, que se iniciam, geralmente, no offset
+100h. Assim, a origem do código se dá em 0.
+
+* O driver deverá sempre ser terminado com uma interrupção
+PX-DOS propriamente designada para essa função, sendo a
+interrupção 90h, função 05h.
+
+* O driver deverá se iniciado com uma assinatura de
+Driver do PX-DOS. Essa assinatura é verificada 
+pelo sistema durante o carregamento do driver. Ela
+serve para verificar se o binário é um Driver válido
+e se é compatível com o PX-DOS. Essa assinatura é "PX",
+e deve estar presente logo no início do Driver de
+Dispositivo do PX-DOS.
+
+* O driver deve ser, preferencialmente, escrito em linguagem
+de programação Assembly, para otimizar o código e facilitar 
+a interação com o sistema. Entretanto, o desenvolvimento em outras
+linguagens é possível e encorajado, desde que atenda os
+requisítos acima citados.
+
+Exemplo de Driver de Dispositivo para PX-DOS 0.1.1 em Assembly
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[BITS 16]      ;; Define que o código gerado deverá ser 16 Bits
+
+org 0          ;; Define o Offset para 0 (0h)
+
+%include "C:\Dev\ASM\Driver\driver.s"
+
+mov ax, cs     ;; Seta os registradores para evitar erros
+mov bx, ax
+mov es, ax
+
+INICIO:
+
+mov ah, 0x0e   ;;
+mov al, '!'    ;;  Imprime ! na tela com o auxílio do BIOS
+int 0x10       ;;
+
+INTE: ;; Aqui serão instaladas as interrupções de software do driver
+      ;; que possibilitarão o uso interno e o uso pelos aplicativos.
+
+;; Aqui você pode instalar suas interrupções de software
+
+FIM: ;; Este é o método que o Kernel e ou o driver irão chamar
+     ;; para finalizar o driver. O Kernel pode concelar a
+     ;; execução do Kernel chamando o endereço de memória definido
+     ;; pelo ponteiro.
+
+mov ah, 05h    ;; Define função de término de Driver
+int 90h        ;; Chama o PX-DOS e pede a finalização do Driver
+
+%include "C:\Dev\ASM\driver\util.s" ;; Este arquivo contém macros importantes
+
+autor "Seu nome aqui",0 ;; Macro em C:\Dev\ASM\driver\util.s
+descricao "Descricao de deu driver",0 ;; Macro em C:\Dev\ASM\driver\util.s
+copyright "Copyright (C) ANO Seu Nome.",0 ;; Macro em C:\Dev\ASM\driver\util.s
+licenca "Licenca de seu driver",0 ;; Macro em C:\Dev\ASM\driver\util.s
+
+assinatura db "felipeLunkes",0 ;; Uma assinatura do desenvolvedor
+
+Kit de Desenvolvimento
+++++++++++++++++++++++
+
+* Compiladores Assembly suportados:
+
+- NASM (para qualquer plataforma)
+- YASM (para qualquer plataforma)
+- TASM (para DOS e Windows x86)
+- JWASM (para DOS e Windows x86)
+- WASM (para DOS e Windows x86)
+- Outros compiladores podem ser compatíveis, mas ainda
+não foram testados.
+
+* Compiladores C suportados:
+
+- TCC (DOS e Windows x86)
+- WCC (DOS e Windows x86)
+
+
+Como adicionar Drivers ao sistema
++++++++++++++++++++++++++++++++++
+
+Um arquivo intitulado DRIVERS.SIS, presente na raiz do disco 
+do sistema é responsável por informar ao Sistema quais Drivers
+deverão ser carregados juntamente com o Sistema. Para isso,
+existe uma sintaxe para o comando de inclusão.
+
+Exemplo:
+
+DRIVER=C:\Drivers\disco.sis 
+
+* Após este comando, o sistema irá carregar o driver apenas
+se os requisítos logo acima descritos forem satisfeitos.
+O sistema executa uma rápida verificação no driver de
+dispositivo e, se esse arquivo apresentar um cabeçalho
+executável, será considerado um executável comum,
+carregável pelo prompt de comando, e não será executado.
+Se ele também não encontrar o cabeçalho de Driver
+do PX-DOS, assim como a assinatura, não será executado.
+
+Mais informações sobre a Arquitetura de Drivers
++++++++++++++++++++++++++++++++++++++++++++++++
+
+O próprio arquivo com o cabeçalho possui informações muito
+úteis para o desenvolvedor. Para ter acesso a essas informações,
+basta abrir o arquivo drives.s.
+
+
+Versões antigas do PX-DOS
++++++++++++++++++++++++++
+
+Para desenvolver Drivers de Dispositivo para versões anteriores a atual
+do PX-DOS, inclua o arquivo driver.s na pasta DRVR seguida do número da
+versão, com três dígitos númericos. 
+
+Exemplo:
+
+%include "C:\Dev\ASM\DRVR010\driver.s"
+
+
+
+
+Fim deste arquivo.
+
+
+PX-DOS, PX-DOS 0.9.0 ou qualquer produto associado a
+PX-DOS são marcas registradas de Felipe Miguel Nery Lunkes.
+
+Copyright (C) 2012-2015 Felipe Miguel Nery Lunkes
+Todos os direitos reservados.
+

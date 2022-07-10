@@ -1,0 +1,77 @@
+﻿;;*****************************************************************************
+;;
+;;         ____
+;;        / __ \           Ambiente de Desenvolvimento para PX-DOS®
+;;       / |__| \       Copyright © 2012-2015 Felipe Miguel Nery Lunkes
+;;      /  /  \  \               Todos os direitos reservados
+;;     /__/    \__\ssembly 
+;;
+;;
+;;*****************************************************************************
+;;
+;; Sistema Operacional PX-DOS®. Copyright © 2012-2015 Felipe Miguel Nery Lunkes.
+;; O Sistema Operacional PX-DOS® é protegido por direitos autorais.
+;;
+;;*****************************************************************************
+
+Biblioteca video.s
+------------------
+
+
+Esta biblioteca permite trabalhar com o modo texto
+apenas. Para trabalhar com o modo gráfico, utilize
+a biblioteca gui.s.
+
+
+Esta biblioteca é utilizada para realizar
+interações com o vídeo do computador. Nesta
+biblioteca, existem duas funções disponíveis 
+ao programador:
+
+clrscr:
+
+Esta função é responsável por limpar a tela. 
+Para usá-la, utilize "call clrscr". Esta função
+não altera quaisquer registradores, pois os restaura
+após voltar da interrupção. Também pode ser usada para
+retornar do modo gráfico ao modo texto.
+
+escrever:
+
+Esta função é responsável por imprimir dados, informações
+e mensagens diretamente na tela. Para usá-la, utilize
+"mov si, mensagem ou registrador
+call escrever". O conteúdo presente em si será impresso
+diretamente na tela. Altera apenas o registrador ax.
+
+gotoxy:
+
+Esta função é responsável por pular para pontos definidos na tela, através
+do plano cartesiando: ponto x e ponto y. Para chamá-la, use os parâmetros:
+
+Em dh a linha deve ser declarada ( ponto x )
+Em dl a coluna deve ser declarada ( ponto y )
+
+Depois disso, use call gotoxy.
+
+pintartela:
+
+Esta função é responsável por alterar a cor da tela durante a execução
+dos programas que a utilizam. Existem diversas opções de cores de letras
+e cores de fundo.
+Para tanto, existe um seletor para identificar qual a cor escolhida.
+
+As cores, até agora disponíveis são:
+
+- Fundo azul e letras brancas            - Código 1
+- Fundo cinza e letras verdes            - Código 2
+- Fundo ciano e letras roxas             - Código 3
+- Fundo vermelho e letras azuis          - Código 4
+- Fundo vermelho e letras ciano          - Código 5
+- Fundo vermelho escuro e letras brancas - Código 6
+
+Exemplo de código:
+
+" mov ax, 2       ;; Código da cor deve estar em ax
+  call pintartela ;; Função para colorir a tela
+"

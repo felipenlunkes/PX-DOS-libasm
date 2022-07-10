@@ -1,0 +1,46 @@
+SDK do Sistema Operacional PX-DOS® para Windows DOS ou Windows NT
+---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---*---
+
+O Formato APPX® do PX-DOS, à partir de sua versão 0.9.0
+-------------------------------------------------------
+
+APPX® é um formato de executáveis desenvolvido para maximizar a velocidade
+de operação do aplicativo e reduzir o consumo de recursos do computador.
+Este formato também visa a fácil portabilidade do aplicativo para
+diversas arquiteturas da classe x86 e x86_x64. 
+
+Um aplicativo APPX® possui um cabeçalho executável utilizado para 
+validá-lo, indicar a arquitetura a qual o mesmo foi desenvolvido e
+a versão do sistema que ele foi designado a trabalhar.
+
+Cada uma dessas informações é analisada pelo sistema e são utilizadas
+para maximizar o poder do aplicativo, enquanto reduz os gastos
+de memória RAM e de tempo do processador principal.
+
+Arquitetura a que se destina o executável APPX(R)
+-------------------------------------------------
+
+
+Uma declaração específica identifica para qual arquitetura o aplicativo foi 
+desenvolvido para ser executado da forma apropriada.
+
+Para tanto, o desenvolvedor deverá alterar o cabeçalho, cujo template se encontra
+neste diretório, nomeado de appx.s, com os valores adequados à proposta
+do aplicativo.
+
+Lista de valores válidos e suas referências:
+
+1 - Intel 8086 ou compatível
+2 - Intel 186 ou compatível
+3 - Intel 286 ou compatível
+4 - Intel Pentium ou superiores
+5 - AMD x86_x64 ou compatíveis
+6 - AMD K6 com 3D!Now
+7 - Sem especialização / otimização - Usado para processadores genéricos quando
+não necessita recursos de um processador em especial. Esta é a opção mais usada,
+visto que não é possível prever em qual arquitetura o sistema e o aplicativo serão
+instalados. Previlegie esta opção. Aviso! O nível de arquitetura 7 requer
+um processador 186 ou mais recente. O nível 7 é habilitado automaticamente
+ao se executar o serviço APPX.EPX, presente no disco do sistema.
+Este é o serviço de gerenciamento mestre do formato APPX para PX-DOS.
+

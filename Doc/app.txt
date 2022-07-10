@@ -1,0 +1,55 @@
+;;*****************************************************************************
+;;
+;;         ____
+;;        / __ \           Ambiente de Desenvolvimento para PX-DOS®
+;;       / |__| \       Copyright © 2012-2015 Felipe Miguel Nery Lunkes
+;;      /  /  \  \               Todos os direitos reservados
+;;     /__/    \__\ssembly 
+;;
+;;
+;;*****************************************************************************
+;;
+;; Sistema Operacional PX-DOS®. Copyright © 2012-2015 Felipe Miguel Nery Lunkes.
+;; O Sistema Operacional PX-DOS® é protegido por direitos autorais.
+;;
+;;*****************************************************************************
+
+Biblioteca app.s
+----------------
+
+Esta biblioteca se destina a criar aplicativos PX-DOS® para várias versões do sistema, sem
+modificações ou mudanças mínimas.
+
+Esta biblioteca apresenta uma dependência de arquivo. Este arquivo, chamado de Arquivo de 
+Especificação de Versão da Plataforma (AEVP), possui várias informações relativas a algumas
+especificidades de cada versão do PX-DOS®. Esse arquivo, liberado juntamente com a versão mais
+recente, possui informações úteis à biblioteca e ao programa, para que os mesmos se adaptem à
+versão mais recente sem nenhuma alteração do código. Este arquivo contêm constantes, variáveis
+e outras informações utilizadas por todas as bibliotecas e o aplicativo. A relevancia do AEVP
+pode ser constatada principalmente no funcionamento da biblioteca app.s, que possui um procedimento
+de verificação da versão do sistema em questão. Através dos valores do AEVP, o programador pode
+designar uma versão mínima necessária para a execução do aplicativo sobre a plataforma PX-DOS®.
+
+Procedimento VERIFICAR_VERSAO
+*****************************
+
+Esse procedimento é responsável por identificar a versão do PX-DOS® que está sendo executada.
+Ele compara a versão retornada pelo sistema e a versão contida no AEVP, que marca aquele
+lançamento. A execução será permitida se a versão do sistema foir igual ou maior que a versão
+catalogada no AEVP. Caso a versão não cumpra esse requisito, a biblioteca pode finalizar o app ou
+pode retornar para o app, para o que mesmo trate a interrupcao, exiba alguma mensagem ou
+ignore o erro, executando apenas os procedimentos internos que são compatíveis.
+Para isso, um parâmetro deve ser passado em CX:
+
+CX = 1: A biblioteca irá gerenciar o erro.
+CX = 0: A biblioteca irá devolver o controle ao procedimento que o chamou para que o mesmo 
+trate o erro.
+
+Observações importantes
+-----------------------
+
+Para utilizar esta biblioteca, todo programa deve ter uma função chamada de "RETORNO" a qual
+a biblioteca irá retornar o controle.
+
+Também deve contar uma função denominada "MANIPULADOR", a qual a biblioteca retornará o 
+controle quase algo dê errado.

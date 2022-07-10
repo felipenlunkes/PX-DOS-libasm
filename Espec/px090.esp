@@ -1,0 +1,46 @@
+;;*****************************************************************************
+;;
+;;         ____
+;;        / __ \           Ambiente de Desenvolvimento para PX-DOS®
+;;       / |__| \       Copyright © 2012-2015 Felipe Miguel Nery Lunkes
+;;      /  /  \  \               Todos os direitos reservados
+;;     /__/    \__\ssembly 
+;;
+;;
+;;*****************************************************************************
+;;
+;; Sistema Operacional PX-DOS®. Copyright © 2012-2013 Felipe Miguel Nery Lunkes.
+;; O Sistema Operacional PX-DOS® é protegido por direitos autorais.
+;;
+;;*****************************************************************************
+;;
+;; Este arquivo de cabeçalho contêm especificações necessárias para a construção
+;; de um aplicativo para PX-DOS®.
+;;
+;;
+;;*****************************************************************************
+;;
+;;
+;;                     Especificações para PX-DOS 0.9.0
+;;
+;;*****************************************************************************
+
+%ifdef ESPECIFICACAO_PXDOS
+
+%warning "Conflito de especificações do PX-DOS para este programa."
+
+%endif
+
+%ifndef ESPECIFICACAO_PXDOS
+
+%define ESPECIFICACAO_PXDOS
+
+%endif
+
+
+
+VERSAO EQU 0
+SUBVERSAO EQU 9
+REVISAO EQU 2016
+PINT EQU 90H
+DINT EQU 21H

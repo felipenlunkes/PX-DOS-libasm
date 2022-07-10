@@ -1,0 +1,211 @@
+﻿;;*****************************************************************************
+;;
+;;         ____
+;;        / __ \           Ambiente de Desenvolvimento para PX-DOS®
+;;       / |__| \       Copyright © 2012-2015 Felipe Miguel Nery Lunkes
+;;      /  /  \  \               Todos os direitos reservados
+;;     /__/    \__\ssembly 
+;;
+;;
+;;*****************************************************************************
+;;
+;; Sistema Operacional PX-DOS®. Copyright © 2012-2015 Felipe Miguel Nery Lunkes.
+;; O Sistema Operacional PX-DOS® é protegido por direitos autorais.
+;;
+;;*****************************************************************************
+
+Biblioteca gui.s
+----------------
+
+# Esta biblioteca funciona ao ser executada 
+# somente sobre o Windows 7 32-Bits.
+# Alguns recursos podem divergir de seu correto
+# funcionamento e função em um sistema baseado em
+# Windows. Alguns recursos podem não funcionar
+# devido a arquitetura do sistema operacional 
+# Windows.
+
+# Esta biblioteca se baseia em implementações de código livre.
+# Se deriva/baseia de códigos do projeto de Software Livre MikeOS.  
+# Para mais informações, consulte a página do projeto.     
+# http://mikeos.sourceforge.net/
+
+***************************************************
+
+
+Esta biblioteca permite trabalhar em modo gráfico
+apenas. Para utilizar o modo texto, utilize a biblioteca
+video.s, específica para o modo texto.
+
+
+Esta biblioteca permite a criação de interfaces
+simples que possiblitam uma interação mais amigável
+com o computador, facilitando assim a entrada e saída 
+de dados. Aviso! Ao se usar a biblioteca interface não
+se deve utilizar a bilioteca video.s. Deve-se usar
+a biblioteca videoint.s.
+É formada por duas função principais, sendo elas:
+
+mkinterface:
+
+Esta é a função que cria a interface gráfica rudimentar e
+prepara o programa e o computador para entrar em modo 
+gráfico, que é utilizado na próxima função. Seu uso:
+"mov ax, título
+mov bx, rodapé
+mov cx, cor
+call mkinterface", em que o título irá ser exibido em cima e o rodapé,
+na área inferior da tela. Ela altera praticamente todos os registradores.
+Para evitar perda de valores desnecessariamente, utilize o push
+para salvar os registradores na pilha. Depois de chamar a função,
+os restaure com pop.
+
+
+
+mostrardialogo:
+
+Esta função fornece a criação de diálogos na tela e ferramentas
+para receber a resposta dada pelo usuário. Para utilizá-la:
+"mov ax, lista
+mov bx, ajuda1
+mov cx, ajuda2
+call mostrardialogo", em que lista é uma variável que contém 
+as perguntas feitas ao usuário. Exemplo:
+lista db "Desligar,Reiniciar,Sair",0 . Cada opção após a vírgula
+é interpretada com um novo item na lista a ser exibida. ajuda1 é
+a mensagem que será exibida na primeira linha do diálogo e ajuda2
+a mensagem exibida na segunda linha. Esta função altera o valor
+de todos os registradores. Então, assim como na anterior, faça
+uma cópia dos registradores na pilha. Após exibir o dialogo, a 
+resposta vem numérica, informando qual item o usuario selecionou.
+Agora, use:
+"jc near fim". Isto indica que se o usuário pressionou ESC
+o programa deve ser fechado imediatamente.
+"cmp ax, 1"
+"je near procedimento". Assim, caso a resposta seja 1, o programa
+pula para a função desejada, e assim sucessivamente.
+
+Exemplo de programa com a biblioteca interface:
+"
+[BITS 16]
+
+org 100h
+
+mov ax, cs
+mov es, ax
+mov bx, ax
+mov gs, ax
+
+
+jmp inicio
+
+%include "C:\Dev\Asm\video.s"
+%include "C:\Dev\Asm\teclado.s"
+%include "C:\Dev\Asm\gui.s"
+
+inicio:
+
+call clrscr ;; Função de video.s
+
+mov ax, .titulo
+mov bx, .rodape
+mov cx, branco_verde
+call mkinterface
+
+mov ax, .lista
+mov bx, .ajuda1
+mov cx, .ajuda2
+call mostrardialogo
+
+jc near simnao
+
+cmp ax, 1
+je near desligar
+
+cmp ax, 2
+je near reiniciar
+
+cmp ax, 3
+je near fim
+
+.titulo db "Programa de Testes de interface",0
+.rodape db "Programa desenvolvido por Felipe Miguel Nery Lunkes",0
+.lista db "Desligar,Reiniciar,Sair",0
+
+desligar:
+
+cli
+clc
+cld
+std
+
+nop
+nop
+hlt
+
+reiniciar:
+
+int 19h
+
+fim:
+
+mov ah, 02h
+mov bx, 01h
+int 90h
+"
+
+
+
+simnao:
+
+Esta função é chamada quando o usuário pressiona ESC. Ela confirma e o usuário 
+realmente deseja finalizar o programa através da tecla ESC. Pode ser usada 
+após um mkinterface e mostrardialogo. Utilizando um "jc near simnao", que verifica
+se a tecla ESC foi pressionada e toma as medidas necessárias de confirmar
+a operação. Essa função, no entanto, necessita de alguns parâmetros. São passados
+pelos registradores di, si e dx. O registrador di deve receber o título, si o rodapé
+e dx a mensagem que será impressa na confirmação da operação. Exemplo:
+
+"
+mov di, .titulo
+mov si, .rodape
+mov dx, .msg_sair
+jc near simnao
+
+.titulo db "Titulo desta janela",0
+.rodape db "Rodape desta janela",0
+.msg_sair db "Voce realmente deseja sair?"
+
+"
+
+simnao também pode ser chamada através do call simnao. Da mesma maneira, os parâmetros
+di, si e dx já devem estar definidos antes de chamar a função.
+
+
+
+
+simnaocancelar:
+
+Esta função é chamada quando o usuário pressiona ESC. Ela confirma e o usuário 
+realmente deseja finalizar o programa através da tecla ESC. Pode ser usada 
+após um mkinterface e mostrardialogo. Utilizando um "jc near simnaocancelar", que verifica
+se a tecla ESC foi pressionada e toma as medidas necessárias de confirmar
+a operação. Difere da anterior pois apresenta também a opção Cancelar.
+
+
+esc:
+
+Biblioteca de SIM/NÃO usada em linha de comando. Deve ser chamada por um aplicativo em linha de comando.
+Após ser chamada, esta função inicia o modo gráfico e exibe a caixa de confirmação sim/não.
+
+Deve ser chamada **APENAS** no modo texto, ou seja, em um programa que não tenha criado ainda uma interface gráfica.
+
+
+
+Observações:
+
+Utilize a função "clrscr" para retornar do modo gráfico para o modo texto, de forma
+simples, fácil e sem quaisquer complicações e comportamentos anormais. Ela também
+é utilizada para limpar a tela completamente. Está disponível em video.s, biblioteca responsável por trabalhar no modo texto apenas.
+Esta função retorna o sistema imediatamente para o modo texto. Para retornar 
+ao modo gráfico, utilize mkinterface e mostrardialogo.

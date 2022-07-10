@@ -1,0 +1,47 @@
+﻿;;*****************************************************************************
+;;
+;;         ____
+;;        / __ \           Ambiente de Desenvolvimento para PX-DOS®
+;;       / |__| \       Copyright © 2012-2015 Felipe Miguel Nery Lunkes
+;;      /  /  \  \               Todos os direitos reservados
+;;     /__/    \__\ssembly 
+;;
+;;
+;;*****************************************************************************
+;;
+;; Sistema Operacional PX-DOS®. Copyright © 2012-2015 Felipe Miguel Nery Lunkes.
+;; O Sistema Operacional PX-DOS® é protegido por direitos autorais.
+;;
+;;*****************************************************************************
+
+Biblioteca teclado.s
+--------------------
+
+
+Esta biblioteca permite trabalhar com o teclado apenas no 
+modo texto. Para trabalhar com interface, 
+outras funções se tornam necessárias. Estão disponíveis
+em interface.s, que reune a grande maioria de funções
+para trabalhar com interface do usuário.
+
+
+Esta biblioteca é utilizada para realizar
+interações com o teclado do computador. 
+Ela é composta de duas funções diretas para o uso
+e outras menores, que não podem ser usadas individualmente.
+
+
+ler:
+
+Esta função é responsável por permitir a entrada de dados 
+pelo teclado e seu armazenamento em um registrador, 
+posição de memória ou variável. Para usá-la, utilize
+"mov di, registrador ou variável
+call ler". 
+
+
+readkey:
+
+Esta função é responsável por aguardar o pressionamento
+da tecla ENTER do teclado, para continuar a execução
+do programa.
